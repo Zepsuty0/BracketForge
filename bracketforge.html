@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BracketForge — Tournament Brackets</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#131b2e;--panel2:#1a2540;--line:#34415f;--text:#f2f5ff;--muted:#a8b4d0;--accent:#8b7cff;--good:#54d6a0;--gold:#ffc86b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172445 0%,var(--bg) 55%);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+header{padding:28px clamp(16px,4vw,52px) 18px;border-bottom:1px solid #293552}header .eyebrow{color:#a99fff;text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:800}h1{font-size:clamp(27px,4vw,42px);line-height:1.1;margin:7px 0}header p{color:var(--muted);margin:8px 0 0;max-width:750px}
+main{padding:22px clamp(12px,3vw,40px) 48px;max-width:1600px;margin:auto}.setup{display:grid;grid-template-columns:minmax(290px,1fr) minmax(280px,.85fr);gap:16px}.panel{background:linear-gradient(145deg,#17213a,#11182a);border:1px solid #2b3857;border-radius:16px;padding:20px;box-shadow:0 14px 40px #0002}.panel h2{font-size:17px;margin:0 0 14px}.field{margin:0 0 15px}label,.label{display:block;color:#c7d0e8;font-size:13px;font-weight:700;margin-bottom:7px}textarea,select,input[type=text]{width:100%;background:#0b1223;border:1px solid #394766;color:var(--text);border-radius:9px;padding:11px 12px;font:inherit;outline:none}textarea:focus,select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #8b7cff25}textarea{min-height:210px;resize:vertical}.hint{font-size:12px;color:var(--muted);margin-top:7px}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.row>*{flex:1;min-width:120px}.toggle{display:flex;align-items:center;gap:9px;color:#dbe2f4;font-size:13px;margin:12px 0}.toggle input{accent-color:var(--accent);width:17px;height:17px}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:800;font:inherit;cursor:pointer;transition:.15s}.primary{background:var(--accent);color:white}.secondary{background:#273451;color:#e8edff;border:1px solid #3b4969}.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}.btn:focus-visible{outline:3px solid #fff;outline-offset:2px}.error{color:#ff9caa;font-size:13px;min-height:18px}.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:22px 0 14px}.toolbar h2{margin:0 auto 0 0;font-size:20px}.status{color:var(--muted);font-size:13px}.bracket-wrap{overflow:auto;padding:12px 2px 24px}.bracket{display:flex;align-items:stretch;gap:28px;min-width:max-content}.round{width:240px;display:flex;flex-direction:column;flex:0 0 240px}.round h3{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#aab6d2;margin:0 0 12px}.matches{display:flex;flex-direction:column;justify-content:space-around;gap:18px;flex:1}.match{border:1px solid #354362;border-radius:11px;background:#111a2d;overflow:hidden;min-height:88px;position:relative}.match-top{font-size:10px;color:#8998ba;padding:7px 10px 2px;display:flex;justify-content:space-between}.slot{display:flex;width:100%;align-items:center;gap:7px;text-align:left;padding:8px 10px;border:0;background:transparent;color:#e7ecfb;cursor:pointer;font:inherit;font-size:13px;min-height:31px}.slot+ .slot{border-top:1px solid #26324c}.slot:hover:not(:disabled){background:#252e4b}.slot:disabled{cursor:default;opacity:.7}.slot.winner{color:var(--good);font-weight:800;background:#153329}.slot .seed{font-size:10px;color:#8290b0;min-width:15px}.slot .name{overflow-wrap:anywhere;flex:1}.slot .check{color:var(--good)}.slot.bye{color:#7d8aa8;font-style:italic}.champion{border:1px solid #6b5ed4;background:#241e48;border-radius:12px;padding:14px;text-align:center;margin-top:18px;min-width:220px}.champion small{display:block;color:#b8afff;text-transform:uppercase;letter-spacing:.12em;font-size:10px}.champion strong{display:block;font-size:18px;margin-top:4px}.empty{padding:34px;text-align:center;color:var(--muted);border:1px dashed #394766;border-radius:14px}.section-title{display:flex;align-items:center;gap:10px;margin:26px 0 12px}.section-title h2{margin:0;font-size:19px}.pill{font-size:11px;border-radius:20px;padding:4px 9px;background:#2a3150;color:#c8c1ff}.losers{border-top:1px solid #293552;margin-top:28px;padding-top:4px}.footer-note{color:var(--muted);font-size:12px;margin-top:14px}
+@media(max-width:760px){.setup{grid-template-columns:1fr}.panel{padding:16px}header{padding-top:22px}.round{width:215px;flex-basis:215px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Tournament toolkit</div><h1>BracketForge</h1><p>Seed by skill, draw random matchups, and advance winners with a click. Runs locally in your browser.</p></header>
+<main>
+<section class="setup">
+ <div class="panel">
+  <h2>01 / Competitors</h2>
+  <div class="field"><label for="names">Players or team names — strongest first</label><textarea id="names" spellcheck="false" placeholder="Alex&#10;Jordan&#10;Morgan&#10;Sam&#10;Taylor&#10;Riley"></textarea><div class="hint" id="entryHint">One player or team per line. For 2v2, enter one team per line (e.g. Alex + Jordan).</div></div>
+  <div class="row"><div class="field"><label for="format">Match format</label><select id="format"><option value="1">1v1 · Singles</option><option value="2">2v2 · Teams</option></select></div><div class="field"><label for="seeding">Pairing method</label><select id="seeding"><option value="skill">Skill seeded</option><option value="random">Randomize pairing</option></select></div></div>
+  <label class="toggle"><input id="losersEnabled" type="checkbox"> Include a consolation / losers bracket</label>
+  <div class="hint">Skill seeded pairs the highest-ranked entry with the lowest-ranked entry, then works inward. Random mode shuffles the list before drawing.</div>
+ </div>
+ <div class="panel">
+  <h2>02 / Tournament options</h2>
+  <div class="field"><label for="eventName">Tournament name (optional)</label><input id="eventName" type="text" placeholder="Friday Night Finals"></div>
+  <div class="field"><label for="byeMode">Uneven player counts</label><select id="byeMode"><option value="bye">Give byes to top seeds</option><option value="strict">Require a power-of-two count</option></select></div>
+  <div class="row"><button class="btn primary" id="generate">Generate bracket</button><button class="btn secondary" id="demo">Load sample names</button></div>
+  <p class="hint">You can change a winner later; dependent matches update and results downstream are cleared if needed.</p>
+  <div class="error" id="error" role="status"></div>
+ </div>
+</section>
+<div class="toolbar"><h2 id="bracketTitle">Your bracket</h2><span class="status" id="status">No tournament generated yet</span><button class="btn secondary" id="reset" disabled>Reset results</button><button class="btn secondary" id="newTournament" disabled>New tournament</button></div>
+<div id="mainBracket" class="empty">Add competitors above, then select <b>Generate bracket</b> to get started.</div>
+<div id="champion"></div>
+<section class="losers" id="losersSection" hidden><div class="section-title"><h2>Consolation bracket</h2><span class="pill">Losers play on</span></div><p class="hint">Every main-bracket loss enters the consolation draw. Its matches become available as enough eliminated entries are known.</p><div id="losersBracket"></div></section>
+<p class="footer-note">Tip: use unique names for easier scorekeeping. Tournament data stays in this page; export or save a copy if you need a permanent record.</p>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+let state = null;
+const cleanName = s => s.trim();
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function powerOfTwo(n){return n>0&&(n&(n-1))===0;}
+function nextPower(n){let p=1;while(p<n)p*=2;return p;}
+function makeMatch(a,b,round,index,bracket='main'){return {id:`${bracket}-${round}-${index}`,a:a||null,b:b||null,winner:null,round,index,bracket};}
+function buildRounds(entries, bracket='main'){
+ const size=nextPower(entries.length), seeded=entries.slice();
+ while(seeded.length<size)seeded.push(null);
+ // Standard seed positions: 1 plays the lowest seed, 2 plays second-lowest, etc.
+ const rounds=[];let first=[];
+ for(let i=0;i<size/2;i++) first.push(makeMatch(seeded[i],seeded[size-1-i],0,i,bracket));
+ rounds.push(first);
+ let count=size/4,r=1;
+ while(count>=1){let arr=[];for(let i=0;i<count;i++)arr.push(makeMatch(null,null,r,i,bracket));rounds.push(arr);count=Math.floor(count/2);r++;}
+ return rounds;
+}
+function entryName(e){return e ? e.name : '—';}
+function isEntry(e){return !!e;}
+function propagate(rounds,round,index,winner){
+ if(round>=rounds.length-1)return;
+ const next=rounds[round+1][Math.floor(index/2)];
+ if(index%2===0)next.a=winner;else next.b=winner;
+ // Clear the downstream winner if its inputs changed.
+ if(next.winner && next.winner!==next.a && next.winner!==next.b)next.winner=null;
+ const nextRound=round+1,nextIndex=Math.floor(index/2);
+ propagate(rounds,nextRound,nextIndex,next.winner);
+}
+function clearDownstream(rounds,round,index){
+ if(round>=rounds.length-1)return;
+ const next=rounds[round+1][Math.floor(index/2)];
+ if(index%2===0)next.a=null;else next.b=null;
+ next.winner=null;
+ clearDownstream(rounds,round+1,Math.floor(index/2));
+}
+function resolveByes(rounds){
+ for(let r=0;r<rounds.length-1;r++){
+  rounds[r].forEach((m,i)=>{
+   if(m.a && !m.b){m.winner=m.a;propagate(rounds,r,i,m.winner);}
+   else if(!m.a && m.b){m.winner=m.b;propagate(rounds,r,i,m.winner);}
+  });
+ }
+}
+function allMainLosers(){
+ const out=[];
+ if(!state)return out;
+ for(const round of state.rounds)for(const m of round){if(m.winner){const loser=m.winner===m.a?m.b:m.a;if(loser&&!out.some(x=>x.id===loser.id))out.push(loser);}}
+ return out;
+}
+function pickWinner(bracket,round,index,side){
+ const rounds=bracket==='main'?state.rounds:state.consolation;
+ const m=rounds?.[round]?.[index];if(!m)return;
+ const chosen=m[side];if(!chosen)return;
+ if(m.winner?.id===chosen.id){m.winner=null;clearDownstream(rounds,round,index);}
+ else {m.winner=chosen;clearDownstream(rounds,round,index);propagate(rounds,round,index,chosen);}
+ render();
+}
+function renderBracket(rounds,target,bracket){
+ target.innerHTML='';
+ if(!rounds?.length){target.innerHTML='<div class="empty">No matches available yet.</div>';return;}
+ const wrap=document.createElement('div');wrap.className='bracket';
+ rounds.forEach((matches,r)=>{
+  const col=document.createElement('div');col.className='round';
+  const heading=document.createElement('h3');heading.textContent=rounds.length===1?'Final':r===rounds.length-1?'Final':r===rounds.length-2?'Semi-finals':r===rounds.length-3?'Quarter-finals':`Round ${r+1}`;col.appendChild(heading);
+  const list=document.createElement('div');list.className='matches';
+  matches.forEach((m,i)=>{
+   const card=document.createElement('div');card.className='match';
+   const top=document.createElement('div');top.className='match-top';top.innerHTML=`<span>Match ${i+1}</span><span>${m.winner?'Complete':'Pending'}</span>`;card.appendChild(top);
+   ['a','b'].forEach(side=>{
+    const e=m[side],btn=document.createElement('button');btn.className='slot';
+    if(m.winner&&e&&m.winner.id===e.id)btn.classList.add('winner');
+    if(!e)btn.classList.add('bye');
+    btn.disabled=!e;
+    btn.innerHTML=`<span class="seed">${side.toUpperCase()}</span><span class="name"></span><span class="check">${m.winner&&e&&m.winner.id===e.id?'✓':''}</span>`;
+    btn.querySelector('.name').textContent=entryName(e);
+    btn.title=e?`Select ${e.name} as winner`:'Empty slot';
+    btn.addEventListener('click',()=>pickWinner(bracket,r,i,side));
+    card.appendChild(btn);
+   });
+   list.appendChild(card);
+  });
+  col.appendChild(list);wrap.appendChild(col);
+ });
+ target.appendChild(wrap);
+}
+function render(){
+ if(!state)return;
+ renderBracket(state.rounds,$('mainBracket'),'main');
+ const final=state.rounds[state.rounds.length-1][0];
+ $('champion').innerHTML=final?.winner?`<div class="champion"><small>🏆 Tournament champion</small><strong></strong></div>`:'';
+ if(final?.winner)$('champion').querySelector('strong').textContent=final.winner.name;
+ const matches=state.rounds.flat().length,done=state.rounds.flat().filter(m=>m.winner).length;
+ $('status').textContent=`${done} / ${matches} main-bracket matches decided`;
+ $('bracketTitle').textContent=state.name||'Your bracket';
+ $('losersSection').hidden=!state.losersEnabled;
+ if(state.losersEnabled){
+  const losers=allMainLosers();
+  if(losers.length>=2){
+   const sig=losers.map(x=>x.id).join('|');
+   if(sig!==state.consolationSignature){
+    const oldWinners=new Map((state.consolation||[]).flat().map(m=>[m.id,m.winner]));
+    state.consolation=buildRounds(losers,'consolation');state.consolationSignature=sig;
+    state.consolation.flat().forEach(m=>{if(oldWinners.has(m.id))m.winner=oldWinners.get(m.id)});
+    resolveByes(state.consolation);
+   }
+   renderBracket(state.consolation,$('losersBracket'),'consolation');
+  }else{$('losersBracket').innerHTML='<div class="empty">Losers bracket appears after at least two competitors have been eliminated.</div>';state.consolation=[];state.consolationSignature='';}
+ }
+}
+function generate(){
+ $('error').textContent='';
+ const names=$('names').value.split(/\r?\n/).map(cleanName).filter(Boolean);
+ if(names.length<2){$('error').textContent='Enter at least two players or teams.';return;}
+ if(new Set(names.map(n=>n.toLocaleLowerCase())).size!==names.length){$('error').textContent='Please use unique names for each player or team.';return;}
+ if($('byeMode').value==='strict'&&!powerOfTwo(names.length)){$('error').textContent='Strict mode requires 2, 4, 8, 16, 32… entries.';return;}
+ let ordered=names.map((name,i)=>({id:`entry-${i}-${name}`,name,seed:i+1}));
+ if($('seeding').value==='random')ordered=shuffle(ordered);
+ state={name:$('eventName').value.trim(),format:$('format').value,losersEnabled:$('losersEnabled').checked,entries:ordered,rounds:buildRounds(ordered),consolation:[],consolationSignature:''};
+ resolveByes(state.rounds);
+ $('reset').disabled=false;$('newTournament').disabled=false;
+ render();
+}
+$('generate').addEventListener('click',generate);
+$('demo').addEventListener('click',()=>{$('names').value='Alex\\nJordan\\nMorgan\\nSam\\nTaylor\\nRiley\\nCasey\\nJamie'.replace(/\\n/g,'\n');$('eventName').value='Sample Tournament';});
+$('format').addEventListener('change',()=>{$('entryHint').textContent=$('format').value==='2'?'One team per line. Example: Alex + Jordan':'One player per line. Enter strongest first for skill seeding.';});
+$('reset').addEventListener('click',()=>{if(!state)return;state.rounds=buildRounds(state.entries);resolveByes(state.rounds);state.consolation=[];state.consolationSignature='';render();});
+$('newTournament').addEventListener('click',()=>{state=null;$('mainBracket').className='empty';$('mainBracket').textContent='Add competitors above, then select Generate bracket to get started.';$('champion').innerHTML='';$('losersSection').hidden=true;$('status').textContent='No tournament generated yet';$('reset').disabled=true;$('newTournament').disabled=true;});
+})();
+</script>
+</body>
+</html>
