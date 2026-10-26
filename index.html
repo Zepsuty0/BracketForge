@@ -10,7 +10,7 @@
 <p class="footer">Tournament names, competitor labels and results are public. Do not enter private information.</p></main>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig={apiKey:"PASTE_API_KEY",authDomain:"PASTE_PROJECT_ID.firebaseapp.com",databaseURL:"https://PASTE_DATABASE_NAME-default-rtdb.firebaseio.com",projectId:"PASTE_PROJECT_ID",appId:"PASTE_APP_ID"};
+const firebaseConfig={apiKey:"AIzaSyDpabnmGw4pCX7KwC097cH42xAGoAwZEzI",authDomain:"bracketforge-34aa1.firebaseapp.com",databaseURL:"https://bracketforge-34aa1-default-rtdb.europe-west1.firebasedatabase.app/",projectId:"bracketforge-34aa1",appId:"1:464995835084:web:10c3efef315c6b39993669"};
 const configured=!Object.values(firebaseConfig).some(v=>String(v).startsWith("PASTE_"));const $=id=>document.getElementById(id);let auth,db,user=null,tid=null,data=null,sub=null;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function say(id,t,err=false){$(id).textContent=t;$(id).classList.toggle("error",err)}
